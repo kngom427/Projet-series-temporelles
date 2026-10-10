@@ -1,6 +1,8 @@
+
 # Tableau de disponibilité des variables
 
 Question à laquelle chaque ligne répond : *cette prévision aurait-elle réellement pu être calculée à 14 h le jour J ?*
+
 Les variables des modèles sont construites par `src/features.py` (une ligne par jour cible J+1 et
 par heure H). Le test `tests/test_features.py` remplace par des valeurs absurdes tout ce qui suit
 14 h le jour J et vérifie qu'aucune variable ne change.

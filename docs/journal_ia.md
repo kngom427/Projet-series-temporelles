@@ -1,96 +1,175 @@
+
 # Journal de l'usage de l'IA
 
-Le sujet autorise les agents conversationnels et les assistants de code, mais le groupe reste responsable
-du code, des méthodes, de l'absence de fuite, de l'exactitude des résultats et de l'interprétation.
-Chacun doit pouvoir tout expliquer à l'oral.
+Le sujet autorise les agents conversationnels et les assistants de code. Le groupe reste néanmoins responsable du code, des choix méthodologiques, de l'absence de fuite d'information, de l'exactitude des résultats et de leur interprétation.
 
-**À tenir au fil de l'eau** : une ligne par usage notable, remplie le jour même. Ne rien inventer.
+L'IA a été utilisée comme outil d'accompagnement pour comprendre le problème, proposer des solutions, développer et relire du code, identifier des erreurs et améliorer la documentation. Ses réponses n'ont pas été considérées comme des preuves : les propositions ont été confrontées aux données, aux tests ou aux résultats expérimentaux.
 
-| Date | Qui | Outil | Tâche demandée | Proposition obtenue | Décision (gardée, modifiée, rejetée) | Comment on a vérifié |
+Chaque membre doit pouvoir expliquer les méthodes et les décisions prises lors de la soutenance.
+
+**Règle de documentation :** conserver les usages notables, préciser les propositions acceptées, modifiées ou rejetées et indiquer leur méthode de vérification. Ne pas inventer d'interactions ni de résultats.
+
+## 1. Historique des utilisations
+
+| Date | Qui | Outil | Tâche demandée | Proposition obtenue | Décision | Vérification |
 |---|---|---|---|---|---|---|
-| 2026-10-03 | Martine | Claude Code | Comprendre pourquoi le notebook RTE ne s'exécutait pas | Le code était correct ; le problème venait du kernel non sélectionné dans VS Code | Gardée | Notebook exécuté en ligne de commande avec le `.venv` : il tournait |
-| 2026-10-03 | Martine | Claude Code | Expliquer le sujet et proposer une démarche | Plan en 10 étapes, cohérent avec `docs/decisions.md` ; repérage de noms de dossiers incohérents (`raw` / `donnees-brutes`) | Gardée, puis corrigée (voir ligne suivante) | Relecture du sujet et des docs du dépôt |
-| 2026-10-03 | Martine | Claude Code | Répartition du travail | L'agent a d'abord attribué le calendrier à Martine | Rejetée | `CONTRIBUTING.md` attribue le calendrier à Khadim ; erreur relevée par l'agent lui-même en relisant le fichier |
-| 2026-10-03 | Martine | Claude Code | Écrire le notebook RTE en 10 étapes, commenté | Notebook complet ; commentaires d'observation écrits **avant** l'exécution | Modifiée | Après exécution, deux commentaires ne correspondaient pas aux données (voir exemple 3) : corrigés d'après les sorties réelles |
-| 2026-10-03 | Martine | Claude Code | Choix des données téléchargées | Télécharger seulement 6 colonnes et la période utile | Modifiée à la demande de Martine | Tout le jeu est téléchargé (508 320 lignes, 37 colonnes), puis la sélection est faite et justifiée dans le code |
-| 2026-10-03 | Martine | Claude Code | Traiter les changements d'heure | Règle des « lignes fantômes » : heure de Paris recalculée depuis l'UTC et comparée à l'heure écrite par RTE | Gardée | Lignes de l'API du 27/03/2016 et du 30/10/2016 inspectées à la main ; plus aucun doublon ; tests `tests/test_rte.py` |
-| 2026-10-03 | Martine | Claude Code | Graphique de la consommation par année | Barres avec un axe ne partant pas de 0 | Modifiée | Une barre doit partir de 0 ; remplacé par des points reliés |
-| 2026-10-03 | Martine | Claude Code | Documenter la disponibilité des données à 14 h | Section 11 du notebook, `src/protocole.py`, retard de publication mesuré sur l'API (11 à 13 min) | Gardée | Tableau des retards calculé et vérifié automatiquement ; `tests/test_protocole.py` ; descriptions officielles des jeux ODRÉ |
-| 2026-10-03 | Martine | Claude Code | Déplacer le code du notebook dans `src/rte.py` | Fonctions par étape, notebook qui les appelle | Gardée | `python -m src.rte` produit un fichier identique ligne à ligne à celui du notebook ; 18 tests passent |
-| 2026-10-05 | Martine | Claude Code | Relire le travail météo et calendrier de Khadim | Bilan : calcul reproductible, mais fuite d'information dans l'imputation temporelle, stations corses hors périmètre, documentation incomplète | Gardée, transmise à Khadim | Pipeline relancé depuis les données brutes (18 fichiers identiques) ; périmètre vérifié : conso nationale = somme exacte des 12 régions continentales |
-| 2026-10-05 | Martine | Claude Code | Écrire les benchmarks B1, B2 et les mesures d'erreur | `src/benchmarks.py`, `src/evaluation.py`, tests, notebook 03 | Gardée | Tests sur des exemples calculables à la main ; règle des 14 h vérifiée pour chaque jour, et test qu'une triche est bien détectée |
-| 2026-10-05 | Martine | Claude Code | Commenter le graphique de la semaine du 16 janvier 2023 | Commentaire écrit : « en début de semaine, les benchmarks suivent bien » | Modifiée | En regardant le graphique, les benchmarks sont trop bas toute la semaine (semaine précédente plus douce) : commentaire corrigé |
-| 2026-10-05 | Martine | Claude Code | Ajouter un benchmark « jour précédent » (exemple du sujet) | B0 « veille effective » : jour J pour les heures 0 à 12, J-1 pour 13 à 23, à cause de la règle des 14 h | Gardée | Vérification heure par heure de la règle des 14 h ; test montrant que l'heure 13 du jour J est refusée et l'heure 12 acceptée |
-| 2026-10-05 | Martine | Claude Code | Commenter l'erreur de B0 par heure | Commentaire écrit : « pour tous, les erreurs sont plus grandes le matin » | Modifiée | Le graphique montre que B0 est très bon la nuit et que son erreur culmine vers 14-16 h : commentaire corrigé |
-| 2026-10-07 | Martine | Claude Code | Relire en profondeur les modèles M1 à M4 de Khadim | Liste de problèmes : dataset produit par aucun script, test final utilisé plusieurs fois, fuite à l'heure 13 dans M4, pas de test de non-fuite de `features.py`, benchmarks absents du test | Gardée | Les 17 fichiers de résultats refaits par `src/experiences.py` redonnent exactement les chiffres de Khadim ; chronologie du test lue dans l'historique Git |
-| 2026-10-07 | Martine | Claude Code | Écrire le test de non-fuite de `features.py` | Remplacer tout ce qui suit 14 h par des valeurs absurdes et vérifier que les variables ne changent pas | Modifiée | Contrôle par fausses fuites introduites exprès : la première fausse fuite météo n'était pas détectée, car placée dans une fonction que le calcul réel n'utilise pas ; placée au bon endroit, elle est attrapée |
-| 2026-10-07 | Martine | Claude Code | Expliquer pourquoi M4 n'apporte rien | Hypothèse : M4 apprend sur des erreurs plus petites que les vraies | **Rejetée** | Vérifiée puis écartée : écart-type des erreurs 2 271 MW à l'apprentissage contre 2 063 MW en 2023 ; vraie cause mesurée : les erreurs ne se répètent qu'à 0,24-0,28 d'un jour à l'autre |
-| 2026-10-07 | Martine | Claude Code | Commenter le notebook 04 | Commentaires écrits avant de voir les sorties (« classement identique en 2024 et 2025 », « 2,5 fois moins que B0 ») | Modifiée | Relus face aux sorties : M1/M4 et B0/B1 s'inversent entre 2024 et 2025, et le rapport est de 2,4 : commentaires corrigés |
-| 2026-10-07 | Martine | Claude Code | Préparer le test bonus 2026 | Prolonger toute la période du projet au 30 juin 2026 | **Rejetée** par Martine | Contraire à la décision 1 : les données de 2026 sont rangées à part (mode test bonus) ; vérifié que les fichiers 2016-2025 redeviennent identiques et que le test bonus redonne les mêmes résultats |
-| 2026-10-07 | Martine | Claude Code | Construire le tableau de bord Streamlit | 12 pages, fiches des modèles, calendrier des erreurs | Modifiée | Pages regardées dans le navigateur : noms de méthodes coupés, légendes sur les titres, choix de période caché ; corrigés, puis chaque page testée automatiquement sur les 3 périodes |
+| 2026-10-03 | Martine | Claude Code | Comprendre pourquoi le notebook RTE ne s'exécutait pas | Le code était correct ; le kernel Python n'était pas sélectionné dans VS Code | Gardée | Exécution du notebook avec le `.venv` |
+| 2026-10-03 | Martine | Claude Code | Expliquer le sujet et proposer une démarche | Plan en 10 étapes ; identification d'incohérences dans les noms de dossiers | Gardée et adaptée | Relecture du sujet et de `docs/decisions.md` |
+| 2026-10-03 | Martine | Claude Code | Répartir le travail | Attribution initiale du calendrier à Martine | Rejetée | `CONTRIBUTING.md` attribue le calendrier à Khadim |
+| 2026-10-03 | Martine | Claude Code | Construire le notebook RTE | Notebook commenté, avec certaines observations rédigées avant l'exécution | Modifiée | Commentaires corrigés après lecture des sorties réelles |
+| 2026-10-03 | Martine | Claude Code | Choisir les données à télécharger | Ne télécharger que six colonnes et la période utile | Modifiée | Téléchargement du jeu complet : 508 320 lignes et 37 colonnes ; sélection ensuite |
+| 2026-10-03 | Martine | Claude Code | Traiter les changements d'heure | Recalculer l'heure de Paris depuis l'UTC pour identifier les lignes fantômes | Gardée | Inspection des dates du 27/03/2016 et du 30/10/2016 ; `tests/test_rte.py` |
+| 2026-10-03 | Martine | Claude Code | Représenter la consommation annuelle | Diagramme en barres avec un axe ne partant pas de zéro | Modifiée | Remplacement par des points reliés pour éviter une représentation trompeuse |
+| 2026-10-03 | Martine | Claude Code | Documenter les données disponibles à 14 h | Définition du protocole et mesure des retards de publication | Gardée | Vérification sur l'API ODRÉ et `tests/test_protocole.py` |
+| 2026-10-03 | Martine | Claude Code | Organiser le traitement RTE | Extraction des fonctions dans `src/rte.py` | Gardée | Résultat identique à celui du notebook ; 18 tests réussis |
+| 2026-10-05 | Martine | Claude Code | Relire la météo et le calendrier de Khadim | Identification d'une fuite dans l'imputation, de stations corses hors périmètre et de lacunes documentaires | Gardée, transmise à Khadim | Pipeline relancé ; vérification du périmètre national |
+| 2026-10-05 | Martine | Claude Code | Construire les benchmarks et les mesures d'erreur | `src/benchmarks.py`, `src/evaluation.py` et tests | Gardée | Calculs manuels et tests de la règle des 14 h |
+| 2026-10-05 | Martine | Claude Code | Commenter la semaine du 16 janvier 2023 | Affirmation que les benchmarks suivaient bien la consommation | Modifiée | Le graphique montrait une sous-estimation pendant toute la semaine |
+| 2026-10-05 | Martine | Claude Code | Ajouter le benchmark « jour précédent » | B0 : consommation de J jusqu'à l'heure 12, puis de J-1 | Gardée | Test de disponibilité des heures 12 et 13 |
+| 2026-10-05 | Martine | Claude Code | Interpréter l'erreur horaire de B0 | Affirmation d'une erreur maximale le matin | Modifiée | L'erreur culmine plutôt vers 14–16 h |
+| 2026-10-07 | Martine | Claude Code | Auditer les modèles M1 à M4 | Identification de problèmes de reproductibilité, de chronologie du test et d'une fuite dans M4 | Gardée | Reproduction des fichiers de résultats et inspection de l'historique Git |
+| 2026-10-07 | Martine | Claude Code | Tester l'absence de fuite dans `features.py` | Perturber les données postérieures à 14 h et comparer les variables construites | Modifiée puis gardée | Introduction volontaire de fausses fuites pour contrôler le test |
+| 2026-10-07 | Martine | Claude Code | Expliquer l'échec de M4 | Hypothèse d'erreurs d'apprentissage artificiellement petites | Rejetée | Écarts-types mesurés : 2 271 MW à l'apprentissage contre 2 063 MW en 2023 |
+| 2026-10-07 | Martine | Claude Code | Commenter les résultats du notebook 04 | Commentaires anticipant un classement identique et un gain de facteur 2,5 | Modifiée | Vérification : certains classements s'inversent et le facteur est proche de 2,4 |
+| 2026-10-07 | Martine | Claude Code | Préparer le test bonus 2026 | Étendre toute la période du projet jusqu'en juin 2026 | Rejetée | Test bonus isolé ; fichiers 2016–2025 identiques et scores reproduits |
+| 2026-10-07 | Martine | Claude Code | Construire le tableau de bord Streamlit | Application à 12 pages | Modifiée | Inspection visuelle et tests automatisés des trois périodes |
 
-## Les trois exemples exigés dans le rapport
+## 2. Trois exemples détaillés — Martine
 
-Pour chaque exemple : la tâche demandée, la proposition obtenue, la décision prise, la méthode de
-vérification. Chacun de nous présente ses trois exemples.
+### 2.1. Proposition conservée : vérification de l'absence de fuite temporelle
 
-### Martine
+**Tâche demandée :** vérifier que les variables produites par `src/features.py` n'utilisent aucune information postérieure à l'origine de prévision, fixée à 14 h le jour J.
 
-1. **Proposition conservée après vérification : le test de non-fuite de la table des variables.**
-   *Tâche* : prouver qu'aucune variable de `src/features.py` n'utilise une information postérieure à
-   14 h. *Proposition* : construire les variables d'un jour, remplacer par des valeurs absurdes tout
-   ce qui suit 14 h (consommation après la tranche 12 h-13 h, météo après 13 h), reconstruire, et
-   exiger des variables identiques. *Décision* : gardée. *Vérification* : deux fausses fuites
-   introduites exprès dans le code. La première fausse fuite météo n'était **pas** détectée : elle
-   avait été placée dans une fonction que le calcul réel n'utilise pas. Placée au bon endroit, elle
-   est attrapée, comme la fausse fuite sur la consommation. Le test prouve donc vraiment quelque chose.
-2. **Proposition rejetée : prolonger toute la période du projet jusqu'au 30 juin 2026.** *Tâche* :
-   préparer le test bonus de 2026. *Proposition* : étendre la date de fin des données de tout le
-   projet. *Décision* : rejetée par Martine, car contraire à la décision 1 (période du projet
-   2015-2025). Les données de 2026 sont rangées à part, dans un mode « test bonus ». *Vérification* :
-   après ce changement, les fichiers 2016-2025 sont redevenus identiques à l'octet près, et le test
-   bonus redonne exactement les mêmes résultats.
-3. **Erreur détectée : des commentaires écrits avant de voir les résultats.** *Tâche* : commenter le
-   notebook 04 des résultats. *Proposition* : des commentaires rédigés à l'avance, dont « le
-   classement est le même en 2024 et en 2025 » et « 2,5 fois moins d'erreur que le meilleur
-   benchmark ». *Décision* : corrigés. *Vérification* : relus face aux sorties réelles. M1 et M4,
-   ainsi que B0 et B1, s'inversent entre 2024 et 2025, et le rapport est de 2,4. Autre erreur du même
-   type, trouvée en vérifiant : une explication de l'échec de M4 (« il apprend sur des erreurs plus
-   petites que les vraies ») a été mesurée puis rejetée (écart-type 2 271 MW contre 2 063 MW).
+**Proposition de l'IA :** construire les variables pour une date, modifier artificiellement les observations de consommation et de météo non disponibles à 14 h, puis reconstruire les mêmes variables. Si les résultats changent, une fuite d'information existe.
 
-### Khadim
+**Décision :** proposition conservée et intégrée aux tests.
 
-À compléter par Khadim : trois exemples de son propre usage de l'IA, avec la même structure.
+**Vérification :** de fausses fuites ont été introduites volontairement. Une première modification météorologique n'était pas détectée, car elle concernait une fonction non utilisée par le calcul réel. Après avoir déplacé cette modification dans le chemin effectivement exécuté, le test l'a détectée. Une fausse fuite sur la consommation a également été détectée.
 
-### Autres exemples (notebook RTE, 3 octobre)
+**Enseignement :** un test anti-fuite doit lui-même être testé pour démontrer son efficacité.
 
-1. **Proposition conservée après vérification** : la règle des « lignes fantômes » des jours de
-   passage à l'heure d'été. *Tâche* : supprimer les doublons d'instants UTC. *Proposition* :
-   recalculer l'heure de Paris depuis l'instant UTC et supprimer les lignes où elle diffère de
-   l'heure écrite par RTE. *Décision* : gardée. *Vérification* : lignes de l'API inspectées à la
-   main (le « 02:00 » du 27/03/2016 recopie une autre valeur), 20 lignes supprimées, une par
-   heure fantôme sur 10 ans, plus aucun doublon, tests sur de fausses données.
-2. **Proposition modifiée ou rejetée** : l'agent proposait de ne télécharger que les colonnes
-   et la période utiles. Martine a demandé de télécharger tout le jeu pour voir sa taille réelle
-   et garder une donnée brute intacte. *Décision* : modifiée. *Vérification* : la sélection
-   (37 → 5 colonnes, 508 320 → 176 832 lignes) est maintenant visible et justifiée étape par étape.
-3. **Erreur, faiblesse ou réponse trompeuse détectée** : dans le notebook, l'agent avait écrit
-   des commentaires d'observation avant d'avoir les résultats. Deux étaient faux : les sauts
-   brutaux étaient attribués aux chauffe-eau à 23 h, alors qu'ils tombent à 19 h deux dimanches
-   de février ; le confinement de 2020 était annoncé parmi les jours les plus atypiques, alors
-   que la méthode (écart à la médiane du mois) ne peut pas le détecter. *Décision* : commentaires
-   réécrits d'après les sorties réelles. *Vérification* : lecture des sorties et des graphiques.
+### 2.2. Proposition rejetée : extension de toute la période à 2026
 
-## Corrections de la météo et du calendrier (branche `khadim/corrections-meteo`)
+**Tâche demandée :** préparer une évaluation complémentaire sur janvier–juin 2026.
 
-Corrections demandées par Khadim après la relecture du 2026-10-05, réalisées par Martine avec
-Claude Code. **Khadim doit relire, relancer et pouvoir expliquer chaque changement** avant de
-valider la pull request.
+**Proposition de l'IA :** prolonger la période principale du projet jusqu'au 30 juin 2026.
 
-| Date | Qui | Outil | Tâche demandée | Proposition obtenue | Décision (gardée, modifiée, rejetée) | Comment on a vérifié |
-|---|---|---|---|---|---|---|
-| 2026-10-05 | Martine (pour Khadim) | Claude Code | Rendre l'imputation temporelle causale | Trois méthodes qui n'utilisent que le passé (persistance, veille, persistance ajustée), choisies par longueur de trou sur l'apprentissage | Gardée | Tests anti-fuite : modifier tout ce qui suit un trou ne change pas la valeur imputée ; comparaison sur 1 000 séquences par longueur |
-| 2026-10-05 | Martine (pour Khadim) | Claude Code | Remplacer les 2 anomalies écrites à la main par une règle | Première proposition : seuil fixe de 10 °C d'écart aux voisines | **Rejetée** | Sur les données, ce seuil signalait aussi une vraie mesure (orage du 13/08/2025 à Saint-Girons) : remplacé par le plus grand écart vu sur l'apprentissage (14,19 °C), qui retrouve exactement les 2 anomalies connues |
-| 2026-10-05 | Martine (pour Khadim) | Claude Code | Apprendre les paramètres météo sur 2016-2022 seulement | Une fonction commune `protocole.fin_apprentissage_utc()` utilisée par tous les modules | Gardée | Test : multiplier les données de 2023 par 3 ne change aucun coefficient ; pipeline relancé, 9 793 valeurs spatiales changent de 0,04 °C en moyenne |
-| 2026-10-05 | Martine (pour Khadim) | Claude Code | Préparer la température France sans choisir | Trois candidates, version opérationnelle par report de la dernière observation (jamais d'interpolation) et version météo parfaite | Gardée | Test : modifier les observations de 15 h ne change pas les valeurs horaires opérationnelles d'avant 15 h |
-| 2026-10-05 | Martine (pour Khadim) | Claude Code | Accélérer la recherche des séquences du benchmark temporel | Version vectorisée de la recherche | Gardée | Résultat identique à la version de Khadim sur un exemple (172 séquences) ; temps de calcul de 10 min à 6 s |
+**Décision :** proposition rejetée, car le périmètre principal validé se termine au 31 décembre 2025.
+
+**Solution retenue :** créer un mode de test bonus indépendant, sans modifier les données ni les configurations du projet principal.
+
+**Vérification :** les fichiers 2016–2025 sont redevenus identiques à l'octet près, et le test bonus a reproduit les mêmes résultats.
+
+**Enseignement :** une proposition techniquement réalisable peut être incompatible avec le protocole scientifique retenu.
+
+### 2.3. Erreur détectée : commentaires anticipant les résultats
+
+**Tâche demandée :** rédiger les interprétations du notebook d'évaluation.
+
+**Proposition de l'IA :** plusieurs commentaires ont été produits avant l'examen des sorties, notamment un classement supposé identique entre 2024 et 2025 et une erreur annoncée 2,5 fois plus faible que celle de B0.
+
+**Décision :** commentaires corrigés.
+
+**Vérification :** confrontation systématique aux tableaux et aux graphiques. Les classements M1/M4 et B0/B1 s'inversent entre 2024 et 2025 ; le rapport d'erreur est d'environ 2,4.
+
+Une autre explication proposée pour M4 a été rejetée après mesure : les erreurs d'apprentissage n'étaient pas plus petites que celles de validation.
+
+**Enseignement :** l'IA peut produire des interprétations plausibles mais incompatibles avec les résultats observés.
+
+## 3. Trois exemples détaillés — Khadim
+
+Les exemples suivants décrivent des travaux documentés dans le projet. Leur attribution exacte à des échanges avec ChatGPT, ainsi que les décisions prises personnellement par Khadim, doivent être confirmées avant la remise.
+
+### 3.1. Assistance à la construction des données météorologiques
+
+**Tâche :** préparer une série de température nationale utilisable pour prévoir la consommation à 14 h, sans introduire d'information future.
+
+**Travail documenté :** la préparation météorologique a nécessité de distinguer les observations disponibles, les valeurs manquantes et les températures du lendemain qui ne pouvaient pas être utilisées dans le scénario opérationnel.
+
+Plusieurs solutions d'imputation ont été étudiées : exploitation des stations voisines au même instant, persistance, valeur de la veille et persistance ajustée.
+
+**Décision méthodologique :** utiliser une imputation causale, reposant exclusivement sur des observations contemporaines disponibles ou sur le passé, et réserver les températures observées du lendemain au scénario théorique de météo parfaite.
+
+**Vérification documentée :** des tests anti-fuite contrôlent que la modification d'observations futures ne change pas les valeurs imputées antérieurement. Les méthodes temporelles ont été comparées sur des séquences artificiellement masquées.
+
+### 3.2. Accompagnement méthodologique du modèle M3
+
+**Tâche :** construire et évaluer un modèle de gradient boosting pour comparer une méthode non linéaire à la régression M2.
+
+**Travail documenté :** M3 repose sur `HistGradientBoostingRegressor` et utilise les mêmes variables explicatives que M2. Les configurations ont été comparées sur la validation 2023, à partir d'une grille fixée à l'avance.
+
+**Décision méthodologique :** retenir la configuration sélectionnée sur 2023 et évaluer le modèle sur 2024–2025, sans ajuster les paramètres à partir des résultats du test.
+
+**Vérification documentée :** comparaison des MAE, examen de la stabilité des performances et test de Diebold-Mariano. Sur 2024–2025, M2 obtient environ 1 331 MW et M3 environ 1 349 MW, avec une différence non significative (`p = 0,60`).
+
+
+### 3.3. Analyse de la correction autorégressive M4
+
+**Tâche :** étudier si les erreurs récentes de M1 pouvaient améliorer les prévisions du lendemain.
+
+**Travail documenté :** M4 applique une correction ARMA aux erreurs de M1. Une fuite temporelle a été détectée à l'heure 13 : le résidu du jour J n'était pas encore disponible au moment de la prévision.
+
+**Décision méthodologique :** réserver le résidu de la veille aux heures 0 à 12 et utiliser celui de l'avant-veille pour les heures suivantes. Le modèle a été réévalué pour corriger cette erreur, sans procéder à un nouveau réglage sur le test.
+
+**Vérification documentée :** `tests/test_modeles_arma.py` et reproduction des résultats. Les diagnostics montrent une faible persistance des erreurs, ce qui contribue à expliquer l'absence d'amélioration apportée par M4.
+
+
+## 4. Autres exemples documentés — Notebook RTE
+
+### 4.1. Proposition conservée : correction des lignes fantômes
+
+L'agent a proposé de recalculer l'heure locale depuis l'UTC et de supprimer les lignes dont l'heure déclarée par RTE ne correspondait pas à l'heure recalculée.
+
+**Vérification :** inspection manuelle des changements d'heure de 2016, suppression de 20 lignes fantômes sur dix ans et tests sur des données artificielles.
+
+### 4.2. Proposition modifiée : téléchargement des données
+
+L'agent recommandait de ne récupérer que les colonnes et les dates nécessaires.
+
+Martine a choisi de conserver une extraction brute complète, puis de documenter les transformations successives.
+
+**Vérification :** passage explicite de 37 à 5 colonnes et de 508 320 à 176 832 lignes.
+
+### 4.3. Erreurs d'interprétation détectées
+
+Certains commentaires générés avant l'exécution du notebook étaient inexacts : attribution de sauts de consommation à une heure erronée et identification injustifiée du confinement parmi les journées les plus atypiques.
+
+**Décision :** réécriture des commentaires après consultation des données et des graphiques.
+
+## 5. Corrections de la météo et du calendrier
+
+Les corrections suivantes ont été demandées après la relecture du travail météorologique de Khadim, le 5 octobre 2026. Elles ont été réalisées par Martine avec Claude Code sur la branche `khadim/corrections-meteo`.
+
+Ces interventions ne doivent pas être présentées comme des modifications directement effectuées par ChatGPT pour Khadim.
+
+| Date | Intervention | Proposition | Décision | Vérification |
+|---|---|---|---|---|
+| 2026-10-05 | Rendre l'imputation temporelle causale | Persistance, veille et persistance ajustée selon la longueur du trou | Gardée | Tests anti-fuite et comparaison sur 1 000 séquences par longueur |
+| 2026-10-05 | Remplacer deux corrections manuelles d'anomalies | Seuil fixe de 10 °C entre une station et ses voisines | Rejetée | Détectait aussi une vraie mesure lors d'un orage ; remplacement par un seuil appris de 14,19 °C |
+| 2026-10-05 | Apprendre les paramètres météo sur l'apprentissage uniquement | Centraliser la limite temporelle dans `protocole.fin_apprentissage_utc()` | Gardée | Modification artificielle des données 2023 sans effet sur les coefficients |
+| 2026-10-05 | Préparer plusieurs températures nationales | Trois candidates et deux scénarios : opérationnel et météo parfaite | Gardée | Modification des observations futures sans effet sur les valeurs opérationnelles antérieures |
+| 2026-10-05 | Accélérer un benchmark temporel | Vectoriser la recherche des séquences | Gardée | Résultat identique sur 172 séquences ; temps réduit d'environ 10 minutes à 6 secondes |
+
+La validation finale de ces corrections suppose leur relecture, leur exécution et leur compréhension par les membres du groupe.
+
+## 6. Bilan critique
+
+L'utilisation de l'IA a principalement apporté :
+
+- une aide à la compréhension et à l'organisation du problème ;
+- une assistance à la programmation et à la documentation ;
+- des propositions de tests de cohérence et de non-fuite ;
+- un soutien à l'analyse et à l'interprétation des résultats ;
+- une aide à la reproductibilité et à la présentation du projet.
+
+Plusieurs limites ont également été constatées :
+
+- certaines propositions étaient incompatibles avec les décisions du groupe ;
+- des commentaires ont été rédigés avant l'observation des résultats ;
+- des explications statistiques plausibles se sont révélées fausses ;
+- certains tests proposés ont nécessité eux-mêmes une vérification ;
+- une solution correcte sur le plan informatique ne garantit pas le respect du protocole temporel.
+
+Le groupe a donc retenu une démarche de vérification systématique : **proposition de l'IA, examen critique, test ou comparaison empirique, puis décision humaine documentée**.
+
+L'IA a constitué un outil d'assistance, et non une source autonome de validation scientifique.
