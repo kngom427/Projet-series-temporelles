@@ -1,3 +1,4 @@
+
 # Protocole de prévision
 
 À 14 h (heure de Paris) le jour J, on prévoit les 24 valeurs horaires de consommation du jour J+1
@@ -57,6 +58,7 @@ aucun de ces paramètres.
 ## Imputation de la météo : causale
 
 Une température manquante à l'instant t n'est reconstruite qu'avec :
+
 - les stations voisines **au même instant t** (imputation spatiale) ;
 - ou, si tout le réseau est vide, **le passé** de la station : persistance, veille, ou persistance
   ajustée (imputation temporelle). Jamais l'observation suivante ni le lendemain.
@@ -65,7 +67,7 @@ Une température manquante à l'instant t n'est reconstruite qu'avec :
 
 - Toutes les séries sont stockées en UTC. Le calendrier et l'origine de prévision sont calculés en heure de Paris.
 - 14 h à Paris = 12 h UTC l'été, 13 h UTC l'hiver.
-- Les jours de changement d'heure comptent 23 ou 25 heures : décision ouverte (voir `docs/decisions.md`).
+- Les jours de changement d'heure comptent 23 ou 25 heures. Ils sont exclus de l'évaluation des prévisions, mais leurs observations restent utilisables comme données historiques (décision 11 de `docs/decisions.md`).
 
 ## Deux scénarios
 

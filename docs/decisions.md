@@ -1,6 +1,7 @@
+
 # Décisions du groupe
 
-Dernière mise à jour : 2026-10-07. Les valeurs chiffrées sont dans `src/config.py`.
+Dernière mise à jour : 2026-10-08. Les valeurs chiffrées sont dans `src/config.py`.
 
 **Règle** : on n'efface jamais une ancienne décision de l'historique. Pour changer quelque chose,
 on met à jour l'état courant dans le tableau des décisions et on ajoute une ligne à
@@ -30,7 +31,7 @@ Statuts : **Validé** (les deux), **À confirmer** (proposé, pas encore validé
 | 15 | Version des données de consommation | Définitives jusqu'en 2024, consolidées pour 2025 (vérifié sur l'API le 2026-10-03). Limite écrite dans `docs/disponibilite_variables.md` | À 14 h, seule la version temps réel existait : notre historique est un peu plus propre (limite à écrire dans le rapport) | Validé |
 | 16 | Format d'échange | Trois fichiers, index en UTC sauf le calendrier. **Consommation** (`donnees-preparees/rte/conso_horaire_utc.csv`) : index `date_heure_utc`, `consommation_MW`, `interpole`, `nature`. **Météo** (`donnees-preparees/meteo/temperatures_france_candidates_horaire_utc.csv`) : index `date_heure_utc`, `temp_8_villes`, `temp_38_simple`, `temp_38_ponderee` (opérationnelles : dernière observation connue) et les mêmes suffixées `_meteo_parfaite` (interpolées, plafond seulement). **Calendrier** (`donnees-preparees/calendrier/calendrier.csv`) : une ligne par date de Paris | Les trois fichiers se joignent directement sur l'heure UTC (le calendrier via la date de Paris). Mise à jour le 2026-10-05 : l'ancien format météo (`station`, `t_celsius`) n'existe plus | Validé |
 
-## Questions ouvertes
+## Questions tranchées et pistes d'amélioration
 
 Toutes les questions d'avant le 2026-10-07 sont tranchées :
 
